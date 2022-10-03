@@ -3,15 +3,54 @@
 namespace App\DataFixtures;
 
 use Faker\Factory;
+use App\Entity\Client;
+use App\Entity\Customer;
 use App\Entity\Produits;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
+     public function __construct( private readonly UserPasswordHasherInterface $encoder){
+
+    }
     public function load(ObjectManager $manager): void
     {
+     
         $faker = Factory::create('fr_FR');
+    
+        for ($nbclients = 1; $nbclients <= 30; $nbclients++) {
+                $fakePassword = '12345678';
+                $client = new Client();
+                if ($nbclients === 1) {
+                $client->setRoles(['ROLE_ADMIN']);
+                } else {
+                    $client->setRoles(['ROLE_USER']);
+                }
+                    
+                $client->setName($faker->company());
+                $client->setPassword($this->encoder->hashPassword($client, $fakePassword ));
+                $client->setEmail($faker->email());
+                //$client->addUser($user);
+                $manager->persist($client);
+
+                for ($nbUsers = 1; $nbUsers <= 5; $nbUsers++) {
+                    
+                    $customer = new Customer();
+                    $customer->setEmail($faker->email());
+                    $customer->setClientId($client);
+                    $manager->persist($customer);
+                
+                }
+        
+        }
+
+        $manager->flush();
+    // }
+    // public function load(ObjectManager $manager): void
+    // {
+      //  $faker = Factory::create('fr_FR');
       
         for ($i = 1; $i <= 10; $i++) {
             $ram = array(4,8,16,32);
