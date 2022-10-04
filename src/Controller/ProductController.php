@@ -10,19 +10,30 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Cache\Adapter\TagAwareAdapter;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class ProductController extends AbstractController
 {
     #[Route('/api/produits', name: 'app_produits', methods: ['GET'])]
-    public function getAllProduits(ProduitsRepository $produitsRepo, SerializerInterface $serializer, Request $request): JsonResponse
+    public function getAllProduits(ProduitsRepository $produitsRepo, TagAwareCacheInterface $cache,SerializerInterface $serializer, Request $request): JsonResponse
     {
         $page = $request->get('page', 1); //parametre par defaut
         $limit = $request->get('limit', 3);
 
         //$produitslist = $produitsRepo->findAll(); sans pagination
-        $produitslist = $produitsRepo->findAllWithPagination($page, $limit);
+        //$produitslist = $produitsRepo->findAllWithPagination($page, $limit); sans cache
+
+        $idcache = "getAllProduits". $page. "-".$limit;
+        $produitsList = $cache->get($idcache, function(ItemInterface $item) use ($produitsRepo, $page, $limit){
+            echo("pas de cache");
+            $item->tag("produitsCache");
+            
+            return $produitsRepo->findAllWithPagination($page, $limit);
+        });
           
-        $jsonProduitsList = $serializer->serialize($produitslist, 'json' );
+        $jsonProduitsList = $serializer->serialize($produitsList, 'json' );
 
         return new JsonResponse($jsonProduitsList, Response::HTTP_OK, [], true);
         
