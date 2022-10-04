@@ -21,7 +21,7 @@ class AppFixtures extends Fixture
         $faker = Factory::create('fr_FR');
     
         for ($nbclients = 1; $nbclients <= 30; $nbclients++) {
-                $fakePassword = '12345678';
+                $fakePassword = 'password';
                 $client = new Client();
                 if ($nbclients === 1) {
                 $client->setRoles(['ROLE_ADMIN']);
