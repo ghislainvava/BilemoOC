@@ -25,15 +25,16 @@ class ProductController extends AbstractController
         //$produitslist = $produitsRepo->findAll(); sans pagination
         //$produitslist = $produitsRepo->findAllWithPagination($page, $limit); sans cache
 
-        $idcache = "getAllProduits". $page. "-".$limit;
-        $produitsList = $cache->get($idcache, function(ItemInterface $item) use ($produitsRepo, $page, $limit){
+        $idCache = "getAllProduits". $page. "-".$limit;
+        $produitsList = $cache->get($idCache, function(ItemInterface $item) use ($produitsRepo, $page, $limit){
+          // dd($limit);
             echo("pas de cache");
             $item->tag("produitsCache");
             
             return $produitsRepo->findAllWithPagination($page, $limit);
         });
           
-        $jsonProduitsList = $serializer->serialize($produitsList, 'json' );
+        $jsonProduitsList = $serializer->serialize($produitsList, 'json');
 
         return new JsonResponse($jsonProduitsList, Response::HTTP_OK, [], true);
         
