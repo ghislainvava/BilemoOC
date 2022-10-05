@@ -2,20 +2,50 @@
 
 namespace App\Controller;
 
+use OA\Parameter;
 use App\Entity\Produits;
 use App\Repository\ProduitsRepository;
+use JMS\Serializer\SerializerInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Cache\Adapter\TagAwareAdapter;
-use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Annotations as OA;
+use OpenApi\Attributes\Schema;
 
 class ProductController extends AbstractController
 {
+    
+    /**
+     * @OA\Response(
+     *     response=200,
+     *     description="Retourne la liste des téléphones"
+     * )
+     * @Parameter(
+     *     name="page",
+     *     in="query",
+     *     description="La page que l'on veut récupérer",
+     *     @OA\Schema(type="int")
+     * )
+     *
+     * @OA\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     description="Le nombre d'éléments que l'on veut récupérer",
+     *     @OA\Schema(type="int")
+     * )
+     * @OA\Tag(name="Produits")
+     *
+     * @param ProduitsRepository $produitsRepo
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @return JsonResponse
+     */
     #[Route('/api/produits', name: 'app_produits', methods: ['GET'])]
     public function getAllProduits(ProduitsRepository $produitsRepo, TagAwareCacheInterface $cache,SerializerInterface $serializer, Request $request): JsonResponse
     {
