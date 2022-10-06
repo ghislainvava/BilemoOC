@@ -21,26 +21,31 @@ use OpenApi\Attributes\Schema;
 class ProductController extends AbstractController
 {
     
-    /**
-     * @OA\Response(
-     *     response=200,
-     *     description="Retourne la liste des téléphones"
-     * )
-     * @Parameter(
-     *     name="page",
-     *     in="query",
-     *     description="La page que l'on veut récupérer",
-     *     @OA\Schema(type="int")
-     * )
-     *
-     * @OA\Parameter(
-     *     name="limit",
-     *     in="query",
-     *     description="Le nombre d'éléments que l'on veut récupérer",
-     *     @OA\Schema(type="int")
-     * )
+   
+    //  * @OA\Response(
+    //  *     response=200,
+    //  *     description="Retourne la liste des téléphones",
+    //  * @OA\MediaType(
+    //  * mediaType="application/json",
+    //  * )
+    //  * ),
+    //  * )
+    //  * @OAParameter(
+    //  *     name="page",
+    //  *     in="query",
+    //  *     description="La page que l'on veut récupérer",
+    //  *     @OA\Schema(type="int")
+    //  * )
+    //  *
+    //  * @OA\Parameter(
+    //  *     name="limit",
+    //  *     in="query",
+    //  *     description="Le nombre d'éléments que l'on veut récupérer",
+    //  *     @OA\Schema(type="int")
+    //  * )
+    //  
+     /**
      * @OA\Tag(name="Produits")
-     *
      * @param ProduitsRepository $produitsRepo
      * @param SerializerInterface $serializer
      * @param Request $request
@@ -57,7 +62,6 @@ class ProductController extends AbstractController
 
         $idCache = "getAllProduits". $page. "-".$limit;
         $produitsList = $cache->get($idCache, function(ItemInterface $item) use ($produitsRepo, $page, $limit){
-          // dd($limit);
             echo("pas de cache");
             $item->tag("produitsCache");
             

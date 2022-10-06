@@ -16,14 +16,18 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
+use OpenApi\Annotations as OA;
+use OA\Parameter;
 
 class UsersController extends AbstractController
 {
-    #[Route('/api/users', name: 'app_users_client', methods: ['GET'])]
+    #[Route('/api/users', name: 'users_list', methods: ['GET'])]
     public function getAllUserClient( CustomerRepository $userRepo, SerializerInterface $serializer): JsonResponse
     {
-        $clientId = 16;
-        $userClientList = $userRepo->findByClientId($clientId);
+        //$clientId = 16;
+        $user = $this->getUser();
+
+        $userClientList = $userRepo->findByClientId($user->getId());
 
         $jsonUserClientList = $serializer->serialize($userClientList, 'json', ['groups' => 'getUsers'] );
 
@@ -31,21 +35,22 @@ class UsersController extends AbstractController
         
     }
 
-    #[Route('/api/user', name: 'app_user_client', methods: ['GET'])]
-    public function getUserClient( CustomerRepository $userRepo): JsonResponse
+    #[Route('/api/users/{id}', name: 'user_detail', methods: ['GET'])]
+    public function getUserClient(int $id, CustomerRepository $userRepo): JsonResponse
     {
-        $customerId = 16;
-        $id = 78;
-        $userClient = $userRepo->findCustomerById($customerId, $id);
+        $user = $this->getUser()->getId();
+        //$customerId = 16;
+        //$id = 78;
+        $userClient = $userRepo->findCustomerById($user, $id);
 
         // $jsonUserClient = $serializer->serialize($userClient, 'json', ['groups' => 'getUsers'] );
         // return new JsonResponse($jsonUserClient, Response::HTTP_OK, [], true);
         //Alternative d'écriture
-        $jsonResponse = $this->json($userClient, 200, [], ['groups' => 'getUsers']);
+        $jsonResponse = $this->json($userClient[0], 200, [], ['groups' => 'getUsers']);
         return $jsonResponse;
         
     }
-    #[Route('/api/create', name: 'app_create', methods: ['POST'])]
+    #[Route('/api/users', name: 'app_create', methods: ['POST'])]
     public function addUserToClient( Request $request, SerializerInterface $serializer)
     {
         $json = $request->getContent();
@@ -54,7 +59,7 @@ class UsersController extends AbstractController
        dd($json);
     }
 
-    #[Route('/api/user', name: 'app_user_client', methods: ['DELETE'])]
+    #[Route('/api/users', name: 'app_user_deleteclient', methods: ['DELETE'])]
     public function deleteUserClient(CustomerRepository $userRepo, Customer $customer, EntityManagerInterface $em): JsonResponse
     {
      
@@ -63,7 +68,7 @@ class UsersController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
-    #[Route('/api/createuser', name: 'app_create_user', methods: ['POST'])]
+    #[Route('/api/users', name: 'app_create_user', methods: ['POST'])]
     public function addUserClient( Request $request, ClientRepository $clientrepo, EntityManagerInterface $em,UrlGeneratorInterface $urlGenerator, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
     {
        $post = $request->getContent();

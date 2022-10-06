@@ -42,7 +42,7 @@ class CustomerRepository extends ServiceEntityRepository
     public function findByClientId($client_id): array
    {
         return $this->createQueryBuilder('u')
-           ->andWhere('u.Client = :client_id')
+           ->andWhere('u.client_id = :client_id')
            ->setParameter('client_id', $client_id)
            ->orderBy('u.id', 'ASC')
            ->setMaxResults(10)
@@ -54,7 +54,7 @@ class CustomerRepository extends ServiceEntityRepository
     public function findCustomerById($clientid, $id): array
    {
         return $this->createQueryBuilder('c')
-           ->Where('c.Client= :client_id')
+           ->Where('c.client_id= :client_id')
            ->andWhere('c.id= :id')
            ->setParameter('client_id', $clientid)
            ->setparameter('id', $id)
