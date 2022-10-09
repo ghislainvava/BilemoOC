@@ -17,6 +17,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
 use OpenApi\Attributes\Schema;
+use App\Services\PageService;
 
 class ProductController extends AbstractController
 {
@@ -52,13 +53,12 @@ class ProductController extends AbstractController
      * @return JsonResponse
      */
     #[Route('/api/produits', name: 'app_produits', methods: ['GET'])]
-    public function getAllProduits(ProduitsRepository $produitsRepo, TagAwareCacheInterface $cache,SerializerInterface $serializer, Request $request): JsonResponse
+    public function getAllProduits(PageService $paginate, ProduitsRepository $produitsRepo, TagAwareCacheInterface $cache,SerializerInterface $serializer, Request $request): JsonResponse
     {
         $page = $request->get('page', 1); //parametre par defaut
         $limit = $request->get('limit', 3);
-
-        //$produitslist = $produitsRepo->findAll(); sans pagination
-        //$produitslist = $produitsRepo->findAllWithPagination($page, $limit); sans cache
+        //$limit =$paginate->getPagination();
+      
 
         $idCache = "getAllProduits". $page. "-".$limit;
         $produitsList = $cache->get($idCache, function(ItemInterface $item) use ($produitsRepo, $page, $limit){

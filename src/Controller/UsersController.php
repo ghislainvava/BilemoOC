@@ -2,32 +2,62 @@
 
 namespace App\Controller;
 
+use OA\Parameter;
 use App\Entity\Client;
 use App\Entity\Customer;
+use OpenApi\Annotations as OA;
 use App\Repository\ClientRepository;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
-use OpenApi\Annotations as OA;
-use OA\Parameter;
 
 class UsersController extends AbstractController
 {
-    #[Route('/api/users', name: 'users_list', methods: ['GET'])]
-    public function getAllUserClient( CustomerRepository $userRepo, SerializerInterface $serializer): JsonResponse
-    {
-        //$clientId = 16;
-        $user = $this->getUser();
+     #[Route('/api/users', name: 'users_list', methods: ['GET'])]
+    // public function getAllUserClient( CustomerRepository $userRepo, SerializerInterface $serializer, Request $request): JsonResponse
+    // {
+    //     //$clientId = 16;
+    //     $user = $this->getUser();
 
+    //     $userClientList = $userRepo->findByClientId($user->getId());
+    //     $page = $request->get('page', 1); //parametre par defaut
+    //     $limit = $request->get('limit', 3);
+
+    //     //$produitslist = $produitsRepo->findAll(); sans pagination
+    //     //$produitslist = $produitsRepo->findAllWithPagination($page, $limit); sans cache
+
+    //     $idCache = "getAllCustomers". $page. "-".$limit;
+
+    //     $jsonUserClientList = $serializer->serialize($userClientList, 'json', ['groups' => 'getUsers'] );
+
+    //     return new JsonResponse($jsonUserClientList, Response::HTTP_OK, [], true);
+        
+    // }
+     public function getAllUserClient( CustomerRepository $userRepo, TagAwareCacheInterface $cache, SerializerInterface $serializer, Request $request): JsonResponse
+    {
+        $page = $request->get('page', 1); //parametre par defaut
+        $limit = $request->get('limit', 3);
+        $user = $this->getUser();
         $userClientList = $userRepo->findByClientId($user->getId());
+    
+
+        $idCache = "getAllUserClient". $page. "-".$limit;
+        $userClientList = $cache->get($idCache, function(ItemInterface $item) use ($userRepo, $page, $limit){
+            echo("pas de cache");
+            $item->tag("usersCache");
+
+            return $userRepo->findAllWithPagination($page, $limit);
+        });
 
         $jsonUserClientList = $serializer->serialize($userClientList, 'json', ['groups' => 'getUsers'] );
 
@@ -35,6 +65,7 @@ class UsersController extends AbstractController
         
     }
 
+    
     #[Route('/api/users/{id}', name: 'user_detail', methods: ['GET'])]
     public function getUserClient(int $id, CustomerRepository $userRepo): JsonResponse
     {
