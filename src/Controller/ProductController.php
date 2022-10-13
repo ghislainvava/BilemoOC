@@ -76,7 +76,7 @@ class ProductController extends AbstractController
     /**
      * @OA\Tag(name="Products")
      */
-    #[Route('/api/product/{id}', name: 'Product_detail', methods: ['GET'])]
+    #[Route('/api/products/{id}', name: 'Product_detail', methods: ['GET'])]
     public function getDetailProduct(Product $produit, SerializerInterface $serializer): JsonResponse 
     {
         $jsonProduit = $serializer->serialize($produit, 'json');

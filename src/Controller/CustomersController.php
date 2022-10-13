@@ -62,7 +62,7 @@ class CustomersController extends AbstractController
         $page = $request->get('page', 1); //parametre par defaut
         $limit = $request->get('limit', 3);
         $client = $this->getUser();
-        $customersInClient = $customerRepo->findByClientId($client->getId());
+        //$customersInClient = $customerRepo->findByClientId($client->getId());
     
 
         $idCache = "getAllUserClient". $page. "-".$limit;
@@ -81,7 +81,7 @@ class CustomersController extends AbstractController
     /**
      * @OA\Tag(name="Customers")
      */
-    #[Route('/api/customer/{id}', name: 'customer_detail', methods: ['GET'])]
+    #[Route('/api/customers/{id}', name: 'customer_detail', methods: ['GET'])]
     public function getUserClient(int $id, CustomerRepository $userRepo): JsonResponse
     {
         $client = $this->getUser()->getId();
@@ -94,7 +94,7 @@ class CustomersController extends AbstractController
     /**
      * @OA\Tag(name="Customers")
      */
-    #[Route('/api/customer', name: 'customer_delete', methods: ['DELETE'])]
+    #[Route('/api/customers', name: 'customer_delete', methods: ['DELETE'])]
     public function deleteUserClient(CustomerRepository $userRepo, Customer $customer, EntityManagerInterface $em): JsonResponse
     {
         $em->remove($customer);
@@ -105,7 +105,7 @@ class CustomersController extends AbstractController
     /**
      * @OA\Tag(name="Customers")
      */
-    #[Route('/api/customer', name: 'create_customer', methods: ['POST'])]
+    #[Route('/api/customers', name: 'create_customer', methods: ['POST'])]
     public function addUserClient( Request $request, ClientRepository $clientrepo, EntityManagerInterface $em,UrlGeneratorInterface $urlGenerator, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
     {
        $client_id = $this->getUser();
