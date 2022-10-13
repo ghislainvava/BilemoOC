@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Customer;
+use App\EventSubscriber\ExceptionSubscriber;
 use OpenApi\Annotations as OA;
 use App\Repository\ClientRepository;
 use App\Repository\CustomerRepository;
@@ -85,7 +86,6 @@ class CustomersController extends AbstractController
     {
         $client = $this->getUser()->getId();
         $customer = $userRepo->findCustomerById($client, $id);
-
         $jsonResponse = $this->json($customer[0], 200, [], ['groups' => 'getUsers']);
         return $jsonResponse;
         
@@ -117,16 +117,13 @@ class CustomersController extends AbstractController
             $errors = $validator->validate($customer);
 
             if (count($errors) > 0) {
-               //return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
-                //return $this->json($errors); 
+         
                 throw new HttpException(JsonResponse::HTTP_BAD_REQUEST, "La requête est invalide");
             }
             
             $em->persist($customer);
             $em->flush();
-            // $jsonCustomer= $serializer->serialize($customer, 'json', ['groups' => 'getBooks']);
-            // $location = $urlGenerator->generate('detailBook', ['id' => $customer->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
-            // return new JsonResponse($jsonCustomer, Response::HTTP_CREATED, ["Location" => $location], true);
+    
             return $this->json($customer, 201, [], ['groups' => 'getCustomers']);
             } catch (NotEncodableValueException $e) {
                 return $this->json([
