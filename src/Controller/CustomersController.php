@@ -3,12 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Customer;
-use App\EventSubscriber\ExceptionSubscriber;
 use OpenApi\Annotations as OA;
+use App\Services\CustomerServices;
 use App\Repository\ClientRepository;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use App\EventSubscriber\ExceptionSubscriber;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -57,23 +58,23 @@ class CustomersController extends AbstractController
      */
      #[Route('/api/customers', name: 'customers_list', methods: ['GET'])]
 
-     public function getAllUserClient( CustomerRepository $customerRepo, TagAwareCacheInterface $cache, SerializerInterface $serializer, Request $request): JsonResponse
+     public function getAllUserClient( CustomerRepository $customerRepo, TagAwareCacheInterface $cache, SerializerInterface $serializer, Request $request, CustomerServices $customerServices): JsonResponse
     {
-        $page = $request->get('page', 1); //parametre par defaut
-        $limit = $request->get('limit', 3);
-        $client = $this->getUser();
-        //$customersInClient = $customerRepo->findByClientId($client->getId());
-    
+        //$client = $this->getUser();
 
-        $idCache = "getAllUserClient". $page. "-".$limit;
-        $customersInClient = $cache->get($idCache, function(ItemInterface $item) use ($customerRepo, $page, $limit){
-            echo("pas de cache");
-            $item->tag("usersCache");
 
-            return $customerRepo->findAllWithPagination($page, $limit);
-        });
+        // $page = $request->get('page', 1); //parametre par defaut
+        // $limit = $request->get('limit', 3);
 
-        $jsonUserClientList = $serializer->serialize($customersInClient, 'json', ['groups' => 'getUsers'] );
+        // $idCache = "getAllUserClient". $page. "-".$limit;
+        // $customersInClient = $cache->get($idCache, function(ItemInterface $item) use ($customerRepo, $page, $limit){
+        //     echo("pas de cache");
+        //     $item->tag("usersCache");
+
+        //     return $customerRepo->findAllWithPagination($page, $limit);
+        // });
+        $customersInClient = $customerServices->getAttributs($customerRepo,$request);
+        $jsonUserClientList = $serializer->serialize($customersInClient, 'json', ['groups' => 'getCustomers'] );
 
         return new JsonResponse($jsonUserClientList, Response::HTTP_OK, [], true);
         
@@ -84,8 +85,9 @@ class CustomersController extends AbstractController
     #[Route('/api/customers/{id}', name: 'customer_detail', methods: ['GET'])]
     public function getUserClient(int $id, CustomerRepository $userRepo): JsonResponse
     {
-        $client = $this->getUser()->getId();
+        $client = $this->getUser();
         $customer = $userRepo->findCustomerById($client, $id);
+    
         $jsonResponse = $this->json($customer[0], 200, [], ['groups' => 'getUsers']);
         return $jsonResponse;
         
@@ -105,8 +107,8 @@ class CustomersController extends AbstractController
     /**
      * @OA\Tag(name="Customers")
      */
-    #[Route('/api/customers', name: 'create_customer', methods: ['POST'])]
-    public function addUserClient( Request $request, ClientRepository $clientrepo, EntityManagerInterface $em,UrlGeneratorInterface $urlGenerator, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
+    #[Route('/api/customer', name: 'create_customer', methods: ['POST'])]
+    public function addUserClient( Request $request, CustomerServices $customerServices, ClientRepository $clientrepo, EntityManagerInterface $em,UrlGeneratorInterface $urlGenerator, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
     {
        $client_id = $this->getUser();
        $post = $request->getContent();
@@ -121,8 +123,10 @@ class CustomersController extends AbstractController
                 throw new HttpException(JsonResponse::HTTP_BAD_REQUEST, "La requête est invalide");
             }
             
-            $em->persist($customer);
-            $em->flush();
+            $customerServices->EntityM($customer);
+            // $em->persist($customer);
+            // $em->flush();
+
     
             return $this->json($customer, 201, [], ['groups' => 'getCustomers']);
             } catch (NotEncodableValueException $e) {
