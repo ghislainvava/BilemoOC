@@ -51,7 +51,7 @@ class CustomerRepository extends ServiceEntityRepository
        ;
    }
 
-    public function findCustomerById($clientid, $id): array
+    public function findCustomerById($clientid, $id)
    {
         return $this->createQueryBuilder('c')
            ->Where('c.client_id= :client_id')
@@ -84,13 +84,13 @@ class CustomerRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Customer
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+   public function findOneBySomeField($value): ?Customer
+   {
+       return $this->createQueryBuilder('c')
+           ->andWhere('c.exampleField = :val')
+           ->setParameter('val', $value)
+           ->getQuery()
+           ->getOneOrNullResult()
+       ;
+   }
 }

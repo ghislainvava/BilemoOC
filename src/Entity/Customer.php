@@ -42,18 +42,6 @@ class Customer
         return $this;
     }
 
-    public function getClient(): ?Client
-    {
-        return $this->Client;
-    }
-
-    public function setClient(?Client $Client): self
-    {
-        $this->Client = $Client;
-
-        return $this;
-    }
-
     public function getClientId(): ?Client
     {
         return $this->client_id;
@@ -65,20 +53,7 @@ class Customer
 
         return $this;
     }
-    public function getClient_id()
-    {
-        return $this->client_id;
-    }
 
-    /**
-     * Set the value of client_id
-     *
-     * @return  self
-     */ 
-    public function setClient_id($client_id)
-    {
-        $this->client_id = $client_id;
 
-        return $this;
-    }
+   
 }

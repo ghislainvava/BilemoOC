@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CustomerRepository;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -11,9 +10,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class CustomerServices 
 {
-   
-    
-
     public function __construct( 
         private TagAwareCacheInterface $cache, 
         private EntityManagerInterface $em
@@ -31,13 +27,16 @@ class CustomerServices
 
             return $customerRepo->findAllWithPagination($page, $limit);
         });
-
         return $customerInClient;
-
-        
     }
 
-    public function EntityM( $customer)
+    public function eManager( $customer)
+    {
+        $this->em->persist($customer);
+        $this->em->flush();
+    }
+
+       public function eRemoveManager( $customer)
     {
         $this->em->persist($customer);
         $this->em->flush();

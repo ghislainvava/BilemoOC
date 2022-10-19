@@ -9,6 +9,7 @@ use App\Services\PageService;
 use OpenApi\Annotations as OA;
 use OpenApi\Attributes\Schema;
 use App\Repository\ProductRepository;
+use App\Services\ProductsServices;
 use JMS\Serializer\SerializerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -55,20 +56,11 @@ class ProductController extends AbstractController
      * @return JsonResponse
      */
     #[Route('/api/products', name: 'products_list', methods: ['GET'])]
-    public function getAllProducts(PageService $paginate, ProductRepository $productRepo, TagAwareCacheInterface $cache,SerializerInterface $serializer, Request $request): JsonResponse
+    public function getAllProducts( ProductsServices $productsServices, ProductRepository $productRepo,SerializerInterface $serializer, Request $request): JsonResponse
     {
-        $page = $request->get('page', 1); 
-        $limit = $request->get('limit', 3);
       
-        $idCache = "getAllProducts". $page. "-".$limit;
-        $productList = $cache->get($idCache, function(ItemInterface $item) use ($productRepo, $page, $limit){
-            echo("pas de cache");
-            $item->tag("productsCache");
-            
-            return $productRepo->findAllWithPagination($page, $limit);
-        });
-          
-        $jsonProductList = $serializer->serialize($productList, 'json');
+        $productsList = $productsServices->getAttributs($productRepo, $request);
+        $jsonProductList = $serializer->serialize($productsList, 'json');
 
         return new JsonResponse($jsonProductList, Response::HTTP_OK, [], true);   
     }

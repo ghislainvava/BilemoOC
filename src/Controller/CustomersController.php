@@ -5,20 +5,14 @@ namespace App\Controller;
 use App\Entity\Customer;
 use OpenApi\Annotations as OA;
 use App\Services\CustomerServices;
-use App\Repository\ClientRepository;
 use App\Repository\CustomerRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Contracts\Cache\ItemInterface;
-use App\EventSubscriber\ExceptionSubscriber;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 
@@ -57,50 +51,38 @@ class CustomersController extends AbstractController
      * @return JsonResponse
      */
      #[Route('/api/customers', name: 'customers_list', methods: ['GET'])]
-
-     public function getAllUserClient( CustomerRepository $customerRepo, TagAwareCacheInterface $cache, SerializerInterface $serializer, Request $request, CustomerServices $customerServices): JsonResponse
+     public function getAllUserClient( CustomerRepository $customerRepo, SerializerInterface $serializer, Request $request, CustomerServices $customerServices): JsonResponse
     {
-        //$client = $this->getUser();
-
-
-        // $page = $request->get('page', 1); //parametre par defaut
-        // $limit = $request->get('limit', 3);
-
-        // $idCache = "getAllUserClient". $page. "-".$limit;
-        // $customersInClient = $cache->get($idCache, function(ItemInterface $item) use ($customerRepo, $page, $limit){
-        //     echo("pas de cache");
-        //     $item->tag("usersCache");
-
-        //     return $customerRepo->findAllWithPagination($page, $limit);
-        // });
+       
         $customersInClient = $customerServices->getAttributs($customerRepo,$request);
         $jsonUserClientList = $serializer->serialize($customersInClient, 'json', ['groups' => 'getCustomers'] );
 
         return new JsonResponse($jsonUserClientList, Response::HTTP_OK, [], true);
         
     }
+
     /**
      * @OA\Tag(name="Customers")
      */
     #[Route('/api/customers/{id}', name: 'customer_detail', methods: ['GET'])]
-    public function getUserClient(int $id, CustomerRepository $userRepo): JsonResponse
+    public function getDetailCustomer(SerializerInterface $serializer, Customer $customer, int $id, CustomerRepository $userRepo): JsonResponse
     {
-        $client = $this->getUser();
-        $customer = $userRepo->findCustomerById($client, $id);
-    
-        $jsonResponse = $this->json($customer[0], 200, [], ['groups' => 'getUsers']);
-        return $jsonResponse;
-        
+         $client = $this->getUser();
+         $customer = $userRepo->findCustomerById($client, $id);;
+        dd($customer);
+        // $jsonResponse = $this->json($customer[0], 200, [], ['groups' => 'getUsers']);
+        // return $jsonResponse;
+        $jsonCustomer = $serializer->serialize($customer, 'json', ['groups' => 'getCustomer']);
+        return new JsonResponse($jsonCustomer, Response::HTTP_OK,  [], true);    
     }
 
     /**
      * @OA\Tag(name="Customers")
      */
     #[Route('/api/customers', name: 'customer_delete', methods: ['DELETE'])]
-    public function deleteUserClient(CustomerRepository $userRepo, Customer $customer, EntityManagerInterface $em): JsonResponse
+    public function deleteUserClient(Customer $customer, CustomerServices $customerServices): JsonResponse
     {
-        $em->remove($customer);
-        $em->flush();
+        $customerServices->eRemoveManager($customer);   
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
@@ -108,7 +90,7 @@ class CustomersController extends AbstractController
      * @OA\Tag(name="Customers")
      */
     #[Route('/api/customer', name: 'create_customer', methods: ['POST'])]
-    public function addUserClient( Request $request, CustomerServices $customerServices, ClientRepository $clientrepo, EntityManagerInterface $em,UrlGeneratorInterface $urlGenerator, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
+    public function addUserClient( Request $request, CustomerServices $customerServices,  SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
     {
        $client_id = $this->getUser();
        $post = $request->getContent();
@@ -122,13 +104,10 @@ class CustomersController extends AbstractController
          
                 throw new HttpException(JsonResponse::HTTP_BAD_REQUEST, "La requête est invalide");
             }
-            
-            $customerServices->EntityM($customer);
-            // $em->persist($customer);
-            // $em->flush();
 
-    
+            $customerServices->eManager($customer);   
             return $this->json($customer, 201, [], ['groups' => 'getCustomers']);
+
             } catch (NotEncodableValueException $e) {
                 return $this->json([
                     'status => 400',

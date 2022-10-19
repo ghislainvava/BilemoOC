@@ -17,15 +17,15 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["getUser"])]
+    #[Groups(["getCustomer"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups(["getUser"])]
+    #[Groups(["getCustomer"])]
     private ?string $email = null;
 
     #[ORM\Column]
-    #[Groups(["getUser"])]
+    #[Groups(["getCustomer"])]
     private ?array $roles = [];
 
     /**
