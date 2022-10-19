@@ -69,7 +69,7 @@ class CustomersController extends AbstractController
     {
          $client = $this->getUser();
          $customer = $userRepo->findCustomerById($client, $id);;
-        dd($customer);
+       
         // $jsonResponse = $this->json($customer[0], 200, [], ['groups' => 'getUsers']);
         // return $jsonResponse;
         $jsonCustomer = $serializer->serialize($customer, 'json', ['groups' => 'getCustomer']);
