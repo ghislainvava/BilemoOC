@@ -38,7 +38,7 @@ class CustomerServices
 
        public function eRemoveManager( $customer)
     {
-        $this->em->persist($customer);
+        $this->em->remove($customer);
         $this->em->flush();
     }
 }

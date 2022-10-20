@@ -77,10 +77,13 @@ class CustomersController extends AbstractController
     /**
      * @OA\Tag(name="Customers")
      */
-    #[Route('/api/customers', name: 'customer_delete', methods: ['DELETE'])]
-    public function deleteUserClient(Customer $customer, CustomerServices $customerServices): JsonResponse
+
+    #[Route('/api/customers/{id}', name: 'customer_delete', methods: ['DELETE'])]
+    public function deleteUserClient(Customer $customer, CustomerServices $customerServices, int $id, CustomerRepository $userRepo): JsonResponse
     {
-        $customerServices->eRemoveManager($customer);   
+        $client = $this->getUser();
+         $customer = $userRepo->findCustomerById($client, $id);;
+        $customerServices->eRemoveManager($customer[0]);   
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
