@@ -64,15 +64,13 @@ class CustomersController extends AbstractController
     /**
      * @OA\Tag(name="Customers")
      */
-    #[Route('/api/customers/{id}', name: 'customer_detail', methods: ['GET'])]
+     #[Route('/api/customers/{id}', name: 'customer_detail', methods: ['GET'])]
     public function getDetailCustomer(SerializerInterface $serializer, Customer $customer, int $id, CustomerRepository $userRepo): JsonResponse
     {
          $client = $this->getUser();
          $customer = $userRepo->findCustomerById($client, $id);;
-       
-        // $jsonResponse = $this->json($customer[0], 200, [], ['groups' => 'getUsers']);
-        // return $jsonResponse;
-        $jsonCustomer = $serializer->serialize($customer, 'json', ['groups' => 'getCustomer']);
+   
+        $jsonCustomer = $serializer->serialize($customer[0], 'json', ['groups' => 'getCustomers']);
         return new JsonResponse($jsonCustomer, Response::HTTP_OK,  [], true);    
     }
 
