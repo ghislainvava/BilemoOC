@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Customer;
 use OpenApi\Annotations as OA;
 use App\Services\CustomerServices;
-use App\Repository\CustomerRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -51,27 +50,29 @@ class CustomersController extends AbstractController
      * @return JsonResponse
      */
      #[Route('/api/customers', name: 'customers_list', methods: ['GET'])]
-     public function getAllUserClient( CustomerRepository $customerRepo, SerializerInterface $serializer, Request $request, CustomerServices $customerServices): JsonResponse
+     public function getAllUserClient( SerializerInterface $serializer, Request $request, CustomerServices $customerServices): JsonResponse
     {
-       
-        $customersInClient = $customerServices->getAttributs($customerRepo,$request);
+        $client = $this->getUser();
+        $customersInClient = $customerServices->getAttributs($client, $request);
         $jsonUserClientList = $serializer->serialize($customersInClient, 'json', ['groups' => 'getCustomers'] );
 
-        return new JsonResponse($jsonUserClientList, Response::HTTP_OK, [], true);
-        
+        return new JsonResponse($jsonUserClientList, Response::HTTP_OK, [], true);    
     }
 
     /**
      * @OA\Tag(name="Customers")
      */
-     #[Route('/api/customers/{id}', name: 'customer_detail', methods: ['GET'])]
-    public function getDetailCustomer(SerializerInterface $serializer, Customer $customer, int $id, CustomerRepository $userRepo): JsonResponse
+    #[Route('/api/customers/{id}', name: 'customer_detail', methods: ['GET'])]
+    public function getDetailCustomer(SerializerInterface $serializer, int $id, CustomerServices $customerServices): JsonResponse
     {
          $client = $this->getUser();
-         $customer = $userRepo->findCustomerById($client, $id);;
+         $customer = $customerServices->findCustomerById($client, $id);
+         if(empty($customer)){
+            return new JsonResponse(status:Response::HTTP_NOT_FOUND);
+         }
    
         $jsonCustomer = $serializer->serialize($customer[0], 'json', ['groups' => 'getCustomers']);
-        return new JsonResponse($jsonCustomer, Response::HTTP_OK,  [], true);    
+        return new JsonResponse($jsonCustomer, Response::HTTP_OK, json:true);    
     }
 
     /**
@@ -79,14 +80,16 @@ class CustomersController extends AbstractController
      */
 
     #[Route('/api/customers/{id}', name: 'customer_delete', methods: ['DELETE'])]
-    public function deleteUserClient(Customer $customer, CustomerServices $customerServices, int $id, CustomerRepository $userRepo): JsonResponse
+    public function deleteUserClient(CustomerServices $customerServices, int $id, ): JsonResponse
     {
         $client = $this->getUser();
-         $customer = $userRepo->findCustomerById($client, $id);;
+        $customer = $customerServices->findCustomerById($client, $id);
+        if(empty($customer)){
+            return new JsonResponse(status:Response::HTTP_NOT_FOUND);
+         }
         $customerServices->eRemoveManager($customer[0]);   
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT); //null corespond au parametre renvoyé
     }
-
     /**
      * @OA\Tag(name="Customers")
      */

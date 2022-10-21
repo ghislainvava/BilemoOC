@@ -71,7 +71,7 @@ class ProductController extends AbstractController
     #[Route('/api/products/{id}', name: 'Product_detail', methods: ['GET'])]
     public function getDetailProduct(Product $produit, SerializerInterface $serializer): JsonResponse 
     {
-        $jsonProduit = $serializer->serialize($produit, 'json');
+        $jsonProduit = $serializer->serialize($produit, 'json'); //doctrine appelle eventlistener
         return new JsonResponse($jsonProduit, Response::HTTP_OK,  [], true);
     }
 }
