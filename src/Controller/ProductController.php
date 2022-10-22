@@ -56,10 +56,9 @@ class ProductController extends AbstractController
      * @return JsonResponse
      */
     #[Route('/api/products', name: 'products_list', methods: ['GET'])]
-    public function getAllProducts( ProductsServices $productsServices, ProductRepository $productRepo,SerializerInterface $serializer, Request $request): JsonResponse
+    public function getAllProducts( ProductsServices $productsServices, SerializerInterface $serializer, Request $request): JsonResponse
     {
-      
-        $productsList = $productsServices->getAttributs($productRepo, $request);
+        $productsList = $productsServices->getAttributs( $request);
         $jsonProductList = $serializer->serialize($productsList, 'json');
 
         return new JsonResponse($jsonProductList, Response::HTTP_OK, [], true);   
@@ -71,7 +70,7 @@ class ProductController extends AbstractController
     #[Route('/api/products/{id}', name: 'Product_detail', methods: ['GET'])]
     public function getDetailProduct(Product $produit, SerializerInterface $serializer): JsonResponse 
     {
-        $jsonProduit = $serializer->serialize($produit, 'json'); //doctrine appelle eventlistener
+        $jsonProduit = $serializer->serialize($produit, 'json'); //doctrine
         return new JsonResponse($jsonProduit, Response::HTTP_OK,  [], true);
     }
 }

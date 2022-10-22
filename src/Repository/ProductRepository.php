@@ -45,8 +45,7 @@ class ProductRepository extends ServiceEntityRepository
             ->setMaxResults($limit);
             
             return $qb->getQuery()->getResult();
-        }
-
+     }
 //    /**
 //     * @return Product[] Returns an array of Product objects
 //     */
