@@ -1,3 +1,3 @@
 # BilemoOC
 
-ok
+	symfony server:start

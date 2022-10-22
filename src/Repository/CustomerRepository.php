@@ -42,7 +42,7 @@ class CustomerRepository extends ServiceEntityRepository
     public function findByClientId($client_id): array
    {
         return $this->createQueryBuilder('u')
-           ->andWhere('u.Client = :client_id')
+           ->andWhere('u.client_id = :client_id')
            ->setParameter('client_id', $client_id)
            ->orderBy('u.id', 'ASC')
            ->setMaxResults(10)
@@ -51,10 +51,10 @@ class CustomerRepository extends ServiceEntityRepository
        ;
    }
 
-    public function findCustomerById($clientid, $id): array
+    public function findCustomerById($clientid, $id)
    {
         return $this->createQueryBuilder('c')
-           ->Where('c.Client= :client_id')
+           ->Where('c.client_id= :client_id')
            ->andWhere('c.id= :id')
            ->setParameter('client_id', $clientid)
            ->setparameter('id', $id)
@@ -62,6 +62,15 @@ class CustomerRepository extends ServiceEntityRepository
            ->getResult()
        ;
    }
+   public function findAllWithPagination($client, $page, $limit) {
+          $qb = $this->createQueryBuilder('b')
+            ->Where('b.client_id= :client_id')
+            ->setParameter('client_id', $client)
+            ->setFirstResult(($page -1) * $limit)
+            ->setMaxResults($limit);
+            
+            return $qb->getQuery()->getResult();
+        }
 //    /**
 //     * @return Customer[] Returns an array of Customer objects
 //     */
@@ -77,13 +86,13 @@ class CustomerRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Customer
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+   public function findOneBySomeField($value): ?Customer
+   {
+       return $this->createQueryBuilder('c')
+           ->andWhere('c.exampleField = :val')
+           ->setParameter('val', $value)
+           ->getQuery()
+           ->getOneOrNullResult()
+       ;
+   }
 }

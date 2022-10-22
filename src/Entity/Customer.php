@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CustomerRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer
@@ -12,11 +13,12 @@ class Customer
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["getUsers"])]
+    #[Groups(["getCustomers"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["getUsers"])]
+    #[Groups(["getCustomers"])]
+    #[Assert\NotBlank(message: "Un email est obligatoire")]
     private ?string $email = null;
 
     #[ORM\ManyToOne(inversedBy: 'customers')]
@@ -51,4 +53,7 @@ class Customer
 
         return $this;
     }
+
+
+   
 }

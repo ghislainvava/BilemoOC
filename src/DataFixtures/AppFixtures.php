@@ -5,7 +5,7 @@ namespace App\DataFixtures;
 use Faker\Factory;
 use App\Entity\Client;
 use App\Entity\Customer;
-use App\Entity\Produits;
+use App\Entity\Product;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -40,6 +40,7 @@ class AppFixtures extends Fixture
                     $customer = new Customer();
                     $customer->setEmail($faker->email());
                     $customer->setClientId($client);
+                    dd($customer);
                     $manager->persist($customer);
                 
                 }
@@ -57,7 +58,7 @@ class AppFixtures extends Fixture
             $stockage = array(32, 64, 128, 256);
             $marque = array('Apple', 'Samsung', 'Xiaomi', 'Redmi', 'Oppo', 'Motorola');
             //$client = $this->getReference('client_'. $faker->numberBetween(1, 7));
-            $produit = new Produits();
+            $produit = new Product();
             $produit->setModelName($faker->numerify('Model-####'));
             //$produit->setEcran($faker->randomfloat(2, 4, 7));
             $produit->setEcran($faker->numerify('#.#-Pouces'));
