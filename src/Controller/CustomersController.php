@@ -52,8 +52,11 @@ class CustomersController extends AbstractController
      #[Route('/api/customers', name: 'customers_list', methods: ['GET'])]
      public function getAllUserClient( SerializerInterface $serializer, Request $request, CustomerServices $customerServices): JsonResponse
     {
-        $client = $this->getUser();
+        $client = $this->getUser(); 
         $customersInClient = $customerServices->getAttributs($client, $request);
+         if (empty($customersInClient)){
+            return new JsonResponse(status:Response::HTTP_NOT_FOUND);
+        }
         $jsonUserClientList = $serializer->serialize($customersInClient, 'json', ['groups' => 'getCustomers'] );
 
         return new JsonResponse($jsonUserClientList, Response::HTTP_OK, [], true);    

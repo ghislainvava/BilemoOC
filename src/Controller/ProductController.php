@@ -59,6 +59,9 @@ class ProductController extends AbstractController
     public function getAllProducts( ProductsServices $productsServices, SerializerInterface $serializer, Request $request): JsonResponse
     {
         $productsList = $productsServices->getAttributs( $request);
+         if (empty($productsList)){
+            return new JsonResponse(status:Response::HTTP_BAD_REQUEST);
+        }
         $jsonProductList = $serializer->serialize($productsList, 'json');
 
         return new JsonResponse($jsonProductList, Response::HTTP_OK, [], true);   
@@ -66,11 +69,19 @@ class ProductController extends AbstractController
 
     /**
      * @OA\Tag(name="Products")
+     * * * @OA\Response(
+     * response=400,
+     *     description="Bad Request: This method is not allowed for this route",
+     * )
+     * 
      */
     #[Route('/api/products/{id}', name: 'Product_detail', methods: ['GET'])]
     public function getDetailProduct(Product $produit, SerializerInterface $serializer): JsonResponse 
     {
         $jsonProduit = $serializer->serialize($produit, 'json'); //doctrine
+         if (empty($jsonProduit)){
+            return new JsonResponse(status:Response::HTTP_BAD_REQUEST);
+        }
         return new JsonResponse($jsonProduit, Response::HTTP_OK,  [], true);
     }
 }
