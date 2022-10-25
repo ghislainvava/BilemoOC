@@ -58,6 +58,15 @@ class ProductController extends AbstractController
     #[Route('/api/products', name: 'products_list', methods: ['GET'])]
     public function getAllProducts( ProductsServices $productsServices, SerializerInterface $serializer, Request $request): JsonResponse
     {
+        $page = (int)$request->query->get('page');
+        $limit = (int)$request->query->get('limit');
+      
+        if ($page == 0 || $limit == 0){   //vérification de page et limit
+            return $this->json([
+                    'status => 400',
+                    'message' => 'Il y a une erreur dans la pagination'
+                ], 400);
+        }
         $productsList = $productsServices->getAttributs( $request);
          if (empty($productsList)){
             return new JsonResponse(status:Response::HTTP_BAD_REQUEST);

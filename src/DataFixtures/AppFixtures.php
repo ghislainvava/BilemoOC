@@ -23,12 +23,8 @@ class AppFixtures extends Fixture
         for ($nbclients = 1; $nbclients <= 30; $nbclients++) {
                 $fakePassword = 'password';
                 $client = new Client();
-                if ($nbclients === 1) {
-                $client->setRoles(['ROLE_ADMIN']);
-                } else {
-                    $client->setRoles(['ROLE_USER']);
-                }
-                    
+                
+                $client->setRoles(['ROLE_USER']);  
                 $client->setName($faker->company());
                 $client->setPassword($this->encoder->hashPassword($client, $fakePassword ));
                 $client->setEmail($faker->email());

@@ -16,7 +16,7 @@ class Customer
     #[Groups(["getCustomers"])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     #[Groups(["getCustomers"])]
     #[Assert\NotBlank(message: "Un email est obligatoire")]
     private ?string $email = null;

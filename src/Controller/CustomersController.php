@@ -53,7 +53,18 @@ class CustomersController extends AbstractController
      public function getAllUserClient( SerializerInterface $serializer, Request $request, CustomerServices $customerServices): JsonResponse
     {
         $client = $this->getUser(); 
+        $page = (int)$request->query->get('page');
+        $limit = (int)$request->query->get('limit');
+      
+        if ($page == 0 || $limit == 0){  //vérification de page et limit
+            return $this->json([
+                    'status => 400',
+                    'message' => 'Il y a une erreur dans la pagination'
+                ], 400);
+        }
+        
         $customersInClient = $customerServices->getAttributs($client, $request);
+       
          if (empty($customersInClient)){
             return new JsonResponse(status:Response::HTTP_NOT_FOUND);
         }
@@ -85,6 +96,7 @@ class CustomersController extends AbstractController
     #[Route('/api/customers/{id}', name: 'customer_delete', methods: ['DELETE'])]
     public function deleteUserClient(CustomerServices $customerServices, int $id, ): JsonResponse
     {
+        
         $client = $this->getUser();
         $customer = $customerServices->findCustomerById($client, $id);
         if(empty($customer)){
@@ -95,14 +107,43 @@ class CustomersController extends AbstractController
     }
     /**
      * @OA\Tag(name="Customers")
+     * 
+     * @OA\RequestBody(
+     *     description="Login credentials",
+     *     required=true,
+     *     @OA\MediaType(
+     *          mediaType="application/json",
+     *          @OA\Schema(
+     *              @OA\Property(
+     *                  property="email",
+     *                  type="gigi@free.fr"
+     *              )
+     *          )
+     *      )
+     * )
+     * 
+     *
+     * @OA\Response(response="201", description="Success")
+     * @OA\Response(response="401", description="Not authorized")
+     * @OA\Response(response="403", description="Access denied")
+     * @OA\Response(response="400", description="Not right format")
+     * 
+     * @param Request $request
+     * @param UserRepository $userRepository
+     * @param SerializerInterface $serializer
+     * @param EntityManagerInterface $manager
+     * @param UserPasswordHasherInterface $passwordHasher
+     * @param ValidatorInterface $validator
+     * @param CacheInterface $userPool
+     * @return JsonResponse
      */
-    #[Route('/api/customer', name: 'create_customer', methods: ['POST'])]
+    #[Route('/api/customers', name: 'create_customer', methods: ['POST'])]
     public function addUserClient( Request $request, CustomerServices $customerServices,  SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
     {
        $client_id = $this->getUser();
        $post = $request->getContent();
        $customer= $serializer->deserialize($post, Customer::class, 'json');
-       $customer->setClient_id($client_id);
+       $customer->setClientId($client_id);
       
        try{
             $errors = $validator->validate($customer);
