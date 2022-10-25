@@ -34,7 +34,7 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\OneToMany(mappedBy: 'client_id', targetEntity: Customer::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'client', targetEntity: Customer::class, orphanRemoval: true)]
     private Collection $customers;
 
     #[ORM\Column(length: 255)]
@@ -136,7 +136,7 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->customers->contains($customer)) {
             $this->customers->add($customer);
-            $customer->setClientId($this);
+            $customer->setClient($this);
         }
 
         return $this;
@@ -146,8 +146,8 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->customers->removeElement($customer)) {
             // set the owning side to null (unless already changed)
-            if ($customer->getClientId() === $this) {
-                $customer->setClientId(null);
+            if ($customer->getClient() === $this) {
+                $customer->setClient(null);
             }
         }
 
