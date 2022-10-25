@@ -143,7 +143,7 @@ class CustomersController extends AbstractController
        $client_id = $this->getUser();
        $post = $request->getContent();
        $customer= $serializer->deserialize($post, Customer::class, 'json');
-       $customer->setClientId($client_id);
+       $customer->setClient($client_id);
       
        try{
             $errors = $validator->validate($customer);

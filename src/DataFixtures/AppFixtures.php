@@ -35,8 +35,8 @@ class AppFixtures extends Fixture
                     
                     $customer = new Customer();
                     $customer->setEmail($faker->email());
-                    $customer->setClientId($client);
-                    dd($customer);
+                    $customer->setClient($client);
+                   
                     $manager->persist($customer);
                 
                 }
