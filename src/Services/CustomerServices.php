@@ -46,9 +46,9 @@ class CustomerServices
         $this->deletecache();
     }
 
-    public function findCustomerById($clientId, $id)
+    public function findCustomerById($client, $id)
     {
-        return $this->customerRepo->findCustomerById($clientId, $id);
+        return $this->customerRepo->findCustomerById($client, $id);
     }
     
     public function deletecache()

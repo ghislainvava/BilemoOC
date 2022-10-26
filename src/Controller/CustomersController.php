@@ -21,14 +21,9 @@ class CustomersController extends AbstractController
     //  
      /**
      *
-     * @OA\Response(
-     *     response=200,
-     *     description="Retourne la liste des utilisateurs du client",
-     * @OA\MediaType(
-     * mediaType="application/json",
-     * )
-     * ),
-     *
+     * @OA\Response(response="201", description="Success")
+     * @OA\Response(response="401", description="Non authorisé")
+     * @OA\Response(response="400", description="Il y a une erreur dans la pagination")
      * @OA\Parameter(
      *     name="page",
      *     in="query",
@@ -75,6 +70,12 @@ class CustomersController extends AbstractController
 
     /**
      * @OA\Tag(name="Customers")
+     *   @OA\RequestBody(
+     *     @OA\MediaType(mediaType="application/json")
+     * )
+     * @OA\Response(response="201", description="Success")
+     * @OA\Response(response="401", description="Not authorized")
+     * @OA\Response(response="400", description="Not right format")
      */
     #[Route('/api/customers/{id}', name: 'customer_detail', methods: ['GET'])]
     public function getDetailCustomer(SerializerInterface $serializer, int $id, CustomerServices $customerServices): JsonResponse
@@ -91,6 +92,9 @@ class CustomersController extends AbstractController
 
     /**
      * @OA\Tag(name="Customers")
+     * @OA\Response(response="201", description="Success")
+     * @OA\Response(response="401", description="Not authorized")
+     * @OA\Response(response="400", description="Not right format")
      */
 
     #[Route('/api/customers/{id}', name: 'customer_delete', methods: ['DELETE'])]
@@ -116,7 +120,9 @@ class CustomersController extends AbstractController
      *          @OA\Schema(
      *              @OA\Property(
      *                  property="email",
-     *                  type="gigi@free.fr"
+     *                  type="string",
+     *                  example="gigi@free.fr"
+     *                  
      *              )
      *          )
      *      )
@@ -125,7 +131,6 @@ class CustomersController extends AbstractController
      *
      * @OA\Response(response="201", description="Success")
      * @OA\Response(response="401", description="Not authorized")
-     * @OA\Response(response="403", description="Access denied")
      * @OA\Response(response="400", description="Not right format")
      * 
      * @param Request $request

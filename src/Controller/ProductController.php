@@ -28,8 +28,9 @@ class ProductController extends AbstractController
      /**
      *
      * @OA\Response(
-     *     response=200,
-     *     description="Retourne la liste des téléphones",
+     *     response=201,description="Sucess",
+     *     response="401", description="Not authorized",
+     *      response="400", description="Not right format",
      * @OA\MediaType(
      * mediaType="application/json",
      * )
@@ -78,11 +79,9 @@ class ProductController extends AbstractController
 
     /**
      * @OA\Tag(name="Products")
-     * * * @OA\Response(
-     * response=400,
-     *     description="Bad Request: This method is not allowed for this route",
-     * )
-     * 
+     * @OA\Response(response="201", description="Success")
+     * @OA\Response(response="401", description="Not authorized")
+     * @OA\Response(response="400", description="Not right format")
      */
     #[Route('/api/products/{id}', name: 'Product_detail', methods: ['GET'])]
     public function getDetailProduct(Product $produit, SerializerInterface $serializer): JsonResponse 

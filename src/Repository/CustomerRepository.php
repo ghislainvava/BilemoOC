@@ -39,24 +39,12 @@ class CustomerRepository extends ServiceEntityRepository
         }
     }
 
-    public function findByClientId($client_id): array
-   {
-        return $this->createQueryBuilder('u')
-           ->andWhere('u.client_id = :client_id')
-           ->setParameter('client_id', $client_id)
-           ->orderBy('u.id', 'ASC')
-           ->setMaxResults(10)
-           ->getQuery()
-           ->getResult()
-       ;
-   }
-
     public function findCustomerById($clientid, $id)
    {
         return $this->createQueryBuilder('c')
-           ->Where('c.client_id= :client_id')
+           ->Where('c.client= :client')
            ->andWhere('c.id= :id')
-           ->setParameter('client_id', $clientid)
+           ->setParameter('client', $clientid)
            ->setparameter('id', $id)
            ->getQuery()
            ->getResult()
@@ -64,8 +52,8 @@ class CustomerRepository extends ServiceEntityRepository
    }
    public function findAllWithPagination($client, $page, $limit) {
           $qb = $this->createQueryBuilder('b')
-            ->Where('b.client_id= :client_id')
-            ->setParameter('client_id', $client)
+            ->Where('b.client= :client')
+            ->setParameter('client', $client)
             ->setFirstResult(($page -1) * $limit)
             ->setMaxResults($limit);
             
