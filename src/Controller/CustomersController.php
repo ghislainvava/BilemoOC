@@ -121,8 +121,7 @@ class CustomersController extends AbstractController
      *              @OA\Property(
      *                  property="email",
      *                  type="string",
-     *                  example="gigi@free.fr"
-     *                  
+     *                  example="ghis@free.fr"
      *              )
      *          )
      *      )
@@ -131,6 +130,7 @@ class CustomersController extends AbstractController
      *
      * @OA\Response(response="201", description="Success")
      * @OA\Response(response="401", description="Not authorized")
+     * @OA\Response(response="403", description="Access denied")
      * @OA\Response(response="400", description="Not right format")
      * 
      * @param Request $request
